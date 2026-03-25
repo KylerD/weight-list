@@ -40,7 +40,7 @@ export function UploadMap({ rubric, onComplete, onBack }: UploadMapProps) {
 
   const processFile = useCallback(
     async (file: File) => {
-      if (!file.name.endsWith('.csv') && file.type !== 'text/csv') {
+      if (!file.name.toLowerCase().endsWith('.csv')) {
         setUploadError('Only .csv files are accepted.');
         return;
       }
@@ -52,14 +52,16 @@ export function UploadMap({ rubric, onComplete, onBack }: UploadMapProps) {
       try {
         const { headers, rows } = await parseCSV(file);
 
+        let finalRows = rows;
         if (rows.length > 200) {
           setRowWarning(
-            `This file has ${rows.length} rows. Only the first 200 will be scored — large files may increase processing time.`
+            `Your file has ${rows.length} rows. Only the first 200 will be scored.`
           );
+          finalRows = rows.slice(0, 200);
         }
 
         setParsedHeaders(headers);
-        setParsedRows(rows);
+        setParsedRows(finalRows);
 
         // Auto-advance to mapping phase
         setPhase('mapping');

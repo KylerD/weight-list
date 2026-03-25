@@ -16,7 +16,7 @@ export function Configure({ initialRubric, onComplete, onBack }: ConfigureProps)
 
   const total = criteria.reduce((sum, c) => sum + c.weight, 0);
   const delta = 100 - total;
-  const isValid = total === 100;
+  const isValid = Math.abs(total - 100) < 0.5;
 
   function handleLabelChange(id: string, value: string) {
     setCriteria((prev) =>
@@ -26,7 +26,7 @@ export function Configure({ initialRubric, onComplete, onBack }: ConfigureProps)
 
   function handleWeightChange(id: string, value: string) {
     const parsed = parseFloat(value);
-    const weight = isNaN(parsed) ? 0 : parsed;
+    const weight = isNaN(parsed) ? 0 : Math.round(parsed);
     setCriteria((prev) =>
       prev.map((c) => (c.id === id ? { ...c, weight } : c))
     );
@@ -187,7 +187,7 @@ export function Configure({ initialRubric, onComplete, onBack }: ConfigureProps)
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <Button variant="outline" onClick={onBack} size="lg" className="w-full h-12 text-sm font-semibold">
           Back
         </Button>

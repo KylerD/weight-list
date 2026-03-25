@@ -60,13 +60,15 @@ export async function scoreLeads(
     batches.push(rows.slice(i, i + batchSize));
   }
 
-  const allScores = await Promise.all(
+  const results = await Promise.allSettled(
     batches.map((batch, batchIndex) =>
       scoreBatch(criteria, mappings, identifierColumn, batch, batchIndex * batchSize)
     )
   );
 
-  return allScores.flat();
+  return results
+    .filter((r): r is PromiseFulfilledResult<Awaited<ReturnType<typeof scoreBatch>>> => r.status === "fulfilled")
+    .flatMap((r) => r.value);
 }
 
 async function scoreBatch(
@@ -124,12 +126,16 @@ IMPORTANT: Respond with ONLY a JSON block in this exact format, no other text:
 \`\`\``,
   });
 
-  const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
-  if (!jsonMatch) {
-    throw new Error("AI did not return a valid JSON block");
+  let parsed;
+  try {
+    const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
+    if (!jsonMatch) {
+      throw new Error("AI did not return a valid JSON block");
+    }
+    parsed = AiScoringResponseSchema.parse(JSON.parse(jsonMatch[1]));
+  } catch (err) {
+    throw new Error(`Failed to parse scoring response: ${err instanceof Error ? err.message : "Unknown error"}`);
   }
-
-  const parsed = AiScoringResponseSchema.parse(JSON.parse(jsonMatch[1]));
 
   return parsed.scoredLeads.map((lead) => {
     const row = rows[lead.rowIndex];

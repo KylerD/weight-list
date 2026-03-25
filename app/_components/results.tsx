@@ -196,8 +196,8 @@ function TierGroup({ tier, leads }: TierGroupProps) {
           {leads.length === 0 ? (
             <p className="px-5 py-5 text-sm text-muted-foreground">No leads in this tier.</p>
           ) : (
-            leads.map((lead) => (
-              <LeadCard key={lead.identifier} lead={lead} config={config} />
+            leads.map((lead, index) => (
+              <LeadCard key={`${lead.identifier}-${index}`} lead={lead} config={config} />
             ))
           )}
         </div>

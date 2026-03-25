@@ -1,21 +1,32 @@
 "use server";
 
+import { z } from "zod";
 import { mapColumns } from "@/lib/ai/ai.service";
 import type { Criterion } from "@/models/rubric.schema";
+import { CriterionSchema } from "@/models/rubric.schema";
 
 export async function mapColumnsAction(
   criteria: Criterion[],
   csvColumns: string[]
 ) {
-  if (criteria.length === 0) {
+  const validatedCriteria = z.array(CriterionSchema).safeParse(criteria);
+  if (!validatedCriteria.success) {
+    return { error: "Invalid criteria data", data: null };
+  }
+  const validatedColumns = z.array(z.string()).safeParse(csvColumns);
+  if (!validatedColumns.success) {
+    return { error: "Invalid column data", data: null };
+  }
+
+  if (validatedCriteria.data.length === 0) {
     return { error: "No criteria provided", data: null };
   }
-  if (csvColumns.length === 0) {
+  if (validatedColumns.data.length === 0) {
     return { error: "No CSV columns found", data: null };
   }
 
   try {
-    const result = await mapColumns(criteria, csvColumns);
+    const result = await mapColumns(validatedCriteria.data, validatedColumns.data);
     return { error: null, data: result };
   } catch (err) {
     console.error("actions/mapping.action.ts/mapColumnsAction:", err);
