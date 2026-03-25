@@ -26,9 +26,16 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-full">
+      {/* App header */}
+      <header className="flex items-center justify-center px-6 pt-8 pb-2">
+        <h1 className="text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+          Weight-List
+        </h1>
+      </header>
+
       <StepIndicator currentStep={step} />
 
-      <main className="flex flex-col items-center flex-1 py-8 px-4">
+      <main className="flex flex-col items-center flex-1 py-6 px-4">
         <div className="w-full max-w-4xl">
           {step === 1 && (
             <Describe

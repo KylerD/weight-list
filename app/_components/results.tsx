@@ -40,11 +40,11 @@ const TIER_CONFIG: Record<
   },
   Weak: {
     label: 'Weak',
-    accent: 'text-muted-foreground',
-    headerBg: 'bg-muted/40 border-border',
-    border: 'border-border',
-    badge: 'bg-muted text-muted-foreground border border-border',
-    scoreColor: 'text-muted-foreground',
+    accent: 'text-red-700 dark:text-red-400',
+    headerBg: 'bg-red-500/10 border-red-500/30',
+    border: 'border-red-500/20',
+    badge: 'bg-red-500/15 text-red-700 dark:text-red-400 border border-red-500/30',
+    scoreColor: 'text-red-700 dark:text-red-400',
   },
 };
 
@@ -82,12 +82,13 @@ function LeadCard({ lead, config }: LeadCardProps) {
         type="button"
         onClick={() => setExpanded((v) => !v)}
         className={cn(
-          'w-full flex items-center justify-between gap-4 px-4 py-3',
-          'hover:bg-muted/30 transition-colors text-left'
+          'w-full flex items-center justify-between gap-4 px-5 py-3.5',
+          'hover:bg-muted/30 transition-colors text-left',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset'
         )}
         aria-expanded={expanded}
       >
-        <span className="text-sm font-medium truncate flex-1">{lead.identifier}</span>
+        <span className="text-sm font-semibold truncate flex-1">{lead.identifier}</span>
         <div className="flex items-center gap-3 shrink-0">
           <span className={cn('text-2xl font-bold tabular-nums leading-none', config.scoreColor)}>
             {Math.round(lead.overallScore)}
@@ -98,7 +99,7 @@ function LeadCard({ lead, config }: LeadCardProps) {
 
       {/* Expandable breakdown */}
       {expanded && (
-        <div className="px-4 pb-4 pt-1">
+        <div className="px-5 pb-5 pt-1">
           <table className="w-full text-xs border-collapse">
             <thead>
               <tr className="border-b border-border">
@@ -165,22 +166,23 @@ function TierGroup({ tier, leads }: TierGroupProps) {
   const config = TIER_CONFIG[tier];
 
   return (
-    <div className={cn('border', config.border)}>
+    <div className={cn('border-2', config.border)}>
       {/* Tier header */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          'w-full flex items-center gap-3 px-4 py-3 border-b transition-colors',
+          'w-full flex items-center gap-3 px-5 py-4 border-b transition-colors',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
           config.headerBg,
           open ? 'border-b-inherit' : 'border-b-transparent'
         )}
         aria-expanded={open}
       >
-        <span className={cn('text-sm font-bold uppercase tracking-widest', config.accent)}>
+        <span className={cn('text-sm font-black uppercase tracking-widest', config.accent)}>
           {config.label}
         </span>
-        <span className={cn('text-xs font-semibold px-2 py-0.5', config.badge)}>
+        <span className={cn('text-xs font-bold tabular-nums px-2.5 py-0.5', config.badge)}>
           {leads.length}
         </span>
         <span className="ml-auto">
@@ -192,7 +194,7 @@ function TierGroup({ tier, leads }: TierGroupProps) {
       {open && (
         <div>
           {leads.length === 0 ? (
-            <p className="px-4 py-4 text-sm text-muted-foreground">No leads in this tier.</p>
+            <p className="px-5 py-5 text-sm text-muted-foreground">No leads in this tier.</p>
           ) : (
             leads.map((lead) => (
               <LeadCard key={lead.identifier} lead={lead} config={config} />
@@ -240,40 +242,45 @@ export function Results({
   const weak = leads.filter((l) => l.tier === 'Weak');
 
   return (
-    <div className="flex flex-col gap-8 px-6 py-10 max-w-3xl mx-auto w-full">
+    <div className="flex flex-col gap-10 px-6 py-12 max-w-3xl mx-auto w-full">
       {/* Page header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Scoring Results</h1>
+          <h1 className="text-4xl font-bold tracking-tight">Results</h1>
           {status === 'done' && (
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
               {leads.length} lead{leads.length !== 1 ? 's' : ''} scored across{' '}
               {rubric.criteria.length} criteria.
             </p>
           )}
         </div>
-        <Button variant="outline" onClick={onReset} className="shrink-0">
+        <Button variant="outline" onClick={onReset} className="shrink-0 font-semibold">
           Start Over
         </Button>
       </div>
 
       {/* Loading state */}
       {status === 'loading' && (
-        <div className="flex flex-col items-center justify-center gap-4 py-20 border border-border">
+        <div className="flex flex-col items-center justify-center gap-4 py-24 border-2 border-border">
           <Spinner />
           <p className="text-sm text-muted-foreground font-medium">
-            Scoring {rows.length} lead{rows.length !== 1 ? 's' : ''}…
+            Scoring {rows.length} lead{rows.length !== 1 ? 's' : ''}...
           </p>
         </div>
       )}
 
       {/* Error state */}
       {status === 'error' && (
-        <div className="flex flex-col items-center gap-4 py-12 border border-destructive/40 bg-destructive/5 px-6">
-          <p className="text-sm text-destructive font-semibold text-center">
+        <div role="alert" className="flex flex-col items-center gap-4 py-16 border-2 border-destructive/40 bg-destructive/5 px-6">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-6 text-destructive" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <p className="text-sm text-destructive font-bold text-center">
             {errorMsg ?? 'Something went wrong.'}
           </p>
-          <Button variant="destructive" onClick={runScoring}>
+          <Button variant="destructive" onClick={runScoring} className="font-semibold">
             Retry
           </Button>
         </div>
@@ -281,7 +288,7 @@ export function Results({
 
       {/* Results */}
       {status === 'done' && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           <TierGroup tier="Strong" leads={strong} />
           <TierGroup tier="Possible" leads={possible} />
           <TierGroup tier="Weak" leads={weak} />
@@ -290,8 +297,8 @@ export function Results({
 
       {/* Bottom start over */}
       {status === 'done' && (
-        <div className="pt-2">
-          <Button variant="outline" onClick={onReset} className="w-full">
+        <div className="pt-4">
+          <Button variant="outline" onClick={onReset} size="lg" className="w-full h-12 text-sm font-bold uppercase tracking-wider">
             Start Over
           </Button>
         </div>

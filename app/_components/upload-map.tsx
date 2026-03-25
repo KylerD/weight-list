@@ -146,10 +146,10 @@ export function UploadMap({ rubric, onComplete, onBack }: UploadMapProps) {
   // --- Upload Phase ---
   if (phase === 'upload') {
     return (
-      <div className="flex flex-col gap-8 px-6 py-10 max-w-2xl mx-auto w-full">
+      <div className="flex flex-col gap-10 px-6 py-12 max-w-2xl mx-auto w-full">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Upload your data</h2>
-          <p className="mt-2 text-muted-foreground text-sm">
+          <h1 className="text-4xl font-bold tracking-tight">Upload your data</h1>
+          <p className="mt-3 text-muted-foreground text-sm leading-relaxed">
             Upload a CSV file with the leads or items you want to score.
           </p>
         </div>
@@ -168,10 +168,11 @@ export function UploadMap({ rubric, onComplete, onBack }: UploadMapProps) {
           onDrop={handleDrop}
           className={cn(
             'flex flex-col items-center justify-center gap-4 cursor-pointer select-none',
-            'border-2 border-dashed px-8 py-16 transition-colors',
+            'border-2 border-dashed px-8 py-20 transition-colors',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-primary',
             isDragging
               ? 'border-primary bg-primary/5'
-              : 'border-border hover:border-primary/50 hover:bg-muted/30'
+              : 'border-muted-foreground/30 hover:border-primary hover:bg-primary/5'
           )}
         >
           {/* Upload icon */}
@@ -198,7 +199,7 @@ export function UploadMap({ rubric, onComplete, onBack }: UploadMapProps) {
             <p className="mt-1 text-xs text-muted-foreground">
               or <span className="underline underline-offset-2 text-foreground">click to browse</span>
             </p>
-            <p className="mt-2 text-xs text-muted-foreground">.csv files only</p>
+            <p className="mt-3 text-xs text-muted-foreground font-medium uppercase tracking-wider">.csv files only</p>
           </div>
 
           {isParsingFile && (
@@ -252,7 +253,12 @@ export function UploadMap({ rubric, onComplete, onBack }: UploadMapProps) {
 
         {/* Error state */}
         {uploadError && (
-          <div className="flex items-center justify-between gap-3 px-3 py-2 border border-destructive/30 bg-destructive/5 text-destructive text-sm">
+          <div role="alert" className="flex items-center gap-3 px-4 py-3 border-2 border-destructive/40 bg-destructive/5 text-destructive text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-4 shrink-0" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
             <span>{uploadError}</span>
           </div>
         )}
@@ -270,17 +276,22 @@ export function UploadMap({ rubric, onComplete, onBack }: UploadMapProps) {
   const columnOptions = ['__none__', ...parsedHeaders];
 
   return (
-    <div className="flex flex-col gap-8 px-6 py-10 max-w-3xl mx-auto w-full">
+    <div className="flex flex-col gap-10 px-6 py-12 max-w-3xl mx-auto w-full">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Review column mapping</h2>
-        <p className="mt-2 text-muted-foreground text-sm">
+        <h1 className="text-4xl font-bold tracking-tight">Review column mapping</h1>
+        <p className="mt-3 text-muted-foreground text-sm leading-relaxed">
           We mapped your CSV columns to each scoring criterion. Override any mapping as needed.
         </p>
       </div>
 
       {/* Mapping error banner */}
       {mappingError && (
-        <div className="flex items-center gap-3 px-3 py-2 border border-destructive/30 bg-destructive/5 text-destructive text-sm">
+        <div role="alert" className="flex items-center gap-3 px-4 py-3 border-2 border-destructive/40 bg-destructive/5 text-destructive text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-4 shrink-0" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
           <span>{mappingError}</span>
         </div>
       )}
@@ -300,7 +311,7 @@ export function UploadMap({ rubric, onComplete, onBack }: UploadMapProps) {
             id="identifier-column"
             value={identifierColumn}
             onChange={(e) => setIdentifierColumn(e.target.value)}
-            className="h-8 max-w-xs border border-border bg-background px-2 text-sm focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="h-9 max-w-xs border-2 border-border bg-background px-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-colors"
           >
             {parsedHeaders.map((col) => (
               <option key={col} value={col}>
@@ -312,17 +323,17 @@ export function UploadMap({ rubric, onComplete, onBack }: UploadMapProps) {
       </div>
 
       {/* Mapping table */}
-      <div className="border border-border overflow-x-auto">
+      <div className="border-2 border-border overflow-x-auto">
         <table className="w-full text-sm border-collapse">
           <thead>
-            <tr className="border-b border-border bg-muted/50">
-              <th className="px-4 py-2.5 text-left font-semibold text-xs uppercase tracking-wider">
+            <tr className="border-b-2 border-border bg-muted/50">
+              <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-muted-foreground">
                 Criterion
               </th>
-              <th className="px-4 py-2.5 text-left font-semibold text-xs uppercase tracking-wider">
+              <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-muted-foreground">
                 Mapped Column
               </th>
-              <th className="px-4 py-2.5 text-left font-semibold text-xs uppercase tracking-wider">
+              <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-muted-foreground">
                 Confidence
               </th>
             </tr>
@@ -350,7 +361,7 @@ export function UploadMap({ rubric, onComplete, onBack }: UploadMapProps) {
                         value={mapping.csvColumn ?? '__none__'}
                         onChange={(e) => handleMappingChange(mapping.criterionId, e.target.value)}
                         aria-label={`Mapped column for ${mapping.criterionLabel}`}
-                        className="h-7 w-full max-w-[220px] border border-border bg-background px-2 text-sm focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        className="h-8 w-full max-w-[220px] border border-border bg-background px-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-colors"
                       >
                         <option value="__none__">— None —</option>
                         {parsedHeaders.map((col) => (
@@ -410,19 +421,33 @@ export function UploadMap({ rubric, onComplete, onBack }: UploadMapProps) {
 }
 
 function ConfidenceBadge({ confidence }: { confidence: ColumnMapping['confidence'] }) {
-  const styles: Record<ColumnMapping['confidence'], string> = {
-    High: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    Medium: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
-    Low: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+  const config: Record<ColumnMapping['confidence'], { style: string; icon: string }> = {
+    High: {
+      style: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-500/30',
+      icon: 'M5 13l4 4L19 7',
+    },
+    Medium: {
+      style: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-500/30',
+      icon: 'M12 9v4m0 4h.01',
+    },
+    Low: {
+      style: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border border-red-500/30',
+      icon: 'M18 6L6 18M6 6l12 12',
+    },
   };
+
+  const { style, icon } = config[confidence];
 
   return (
     <span
       className={cn(
-        'inline-flex items-center px-2 py-0.5 text-xs font-semibold',
-        styles[confidence]
+        'inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-bold',
+        style
       )}
     >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="size-3" aria-hidden="true">
+        <path d={icon} />
+      </svg>
       {confidence}
     </span>
   );
